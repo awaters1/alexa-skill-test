@@ -10,11 +10,15 @@ class Skill extends React.Component {
 
     this.doRequest = this.doRequest.bind(this);
     this.createRequest = this.createRequest.bind(this);
+    this.createSession = this.createSession.bind(this);
     this.setRequest = this.setRequest.bind(this);
+    this.setSession = this.setSession.bind(this);
 
     this.state = {
       request: this.createRequest(props),
-      validRequest: true
+      validRequest: true,
+      session: this.createSession(props),
+      validSession: true
     }
   }
 
@@ -44,6 +48,12 @@ class Skill extends React.Component {
     return beautify(JSON.stringify(request))
   }
 
+   createSession(props) {
+    debug('Skill Component: createSession');
+
+    return beautify(JSON.stringify(props.session))
+  }
+
   setRequest(jsonString) {
     let validRequest;
     try {
@@ -59,6 +69,23 @@ class Skill extends React.Component {
     })
   }
 
+  setSession(jsonString) {
+    let validSession;
+    try {
+      let json = JSON.parse(jsonString)
+      this.props.actions.setSessionData(json);
+      validSession = true
+    } catch (error) {
+      console.log(error);
+      validSession = false
+    }
+    console.log('Updating session to ', jsonString);
+    this.setState({
+      session: jsonString,
+      validSession: validSession
+    })
+  }
+
   componentWillReceiveProps(nextProps) {
     this.setState({
       request: this.createRequest(nextProps)
@@ -68,16 +95,26 @@ class Skill extends React.Component {
   doRequest() {
     debug('Skill Component: doRequest');
     if (this.state.validRequest) {
-      this.props.actions.doRequest(JSON.parse(this.state.request));
+      let request = JSON.parse(this.state.request);
+      request.session.attributes = this.props.session;
+      this.props.actions.doRequest(request);
     }
   }
 
   render() {
     debug('Skill Component: render');
 
+    // TODO: Causes the custom session to not take affect
+    // because this.props contains the value from the state
+    // and not our internal state
+    console.log(this.props);
+    this.state.session = this.createSession(this.props);
+
     const request = this.state.request
+    const session = this.state.session
     const response = beautify(JSON.stringify(this.props.response))
     const requestClass = (this.state.validRequest) ? 'code' : 'invalid code'
+    const sessionClass = (this.state.validSession) ? 'code' : 'invalid code'
 
     return (
       <div className="container-fluid">
@@ -129,6 +166,8 @@ class Skill extends React.Component {
 
         <div className="row req-resp">
           <div className="col-md-6">
+            <h2>Session</h2>
+            <textarea className={sessionClass} onChange={(event) => this.setSession(event.target.value)} value={session}></textarea>
             <h2>Request</h2>
             <textarea className={requestClass} onChange={(event) => this.setRequest(event.target.value)} value={request}></textarea>
           </div>

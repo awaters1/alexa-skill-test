@@ -20,14 +20,15 @@ App.propTypes = {
   intentName: PropTypes.string.isRequired,
   requestType: PropTypes.string.isRequired,
   response: PropTypes.object.isRequired,
-  actions: PropTypes.object.isRequired
+  actions: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => ({
   requestType: state.get('requestType'),
   intentName: state.get('intentName'),
   response: state.get('response'),
-  slots: state.get('slots')
+  slots: state.get('slots'),
+  session: state.get('session')
 })
 
 const mapDispatchToProps = dispatch => ({

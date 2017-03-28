@@ -1,4 +1,4 @@
-import { SET_REQUEST_TYPE, ADD_SLOT, SET_INTENT_NAME, SET_SLOT_KEY, DELETE_SLOT, SET_SLOT_VALUE, SET_REQUEST, DO_REQUEST, CREATE_SLOT } from '../constants/ActionTypes'
+import { SET_REQUEST_TYPE, ADD_SLOT, SET_INTENT_NAME, SET_SLOT_KEY, DELETE_SLOT, SET_SLOT_VALUE, SET_REQUEST, DO_REQUEST, CREATE_SLOT, SET_SESSION_DATA } from '../constants/ActionTypes'
 import immutable from 'immutable'
 const debug = require('debug')('app')
 
@@ -6,7 +6,8 @@ const initialState = immutable.Map({
   slots: immutable.List(),
   requestType: 'launch',
   intentName: '',
-  response: {}
+  response: {},
+  session: {}
 });
 
 export default function(state = initialState, action) {
@@ -61,6 +62,9 @@ export default function(state = initialState, action) {
       return state.set('slots', slots)
     case DO_REQUEST:
       return state.set('response', action.response)
+    case SET_SESSION_DATA:
+      console.log('Set session data', action.sessionData);
+      return state.set('session', action.sessionData);
     default:
       return state
   }

@@ -58,20 +58,33 @@ export const deleteSlot = function(id) {
   }
 }
 
+export const setSessionData = function(session) {
+  debug('Action: setSessionData')
+  return {
+    type: types.SET_SESSION_DATA,
+    sessionData: session
+  }
+}
+
 export const doRequest = function(request) {
   debug('Action: doRequest')
   return function(dispatch) {
     $.ajax({
       method: 'post',
       url: '/lambda',
-      data: {
+      data: JSON.stringify({
         event: request
-      }
+      }),
+      contentType: "application/json; charset=utf-8",
     }).done(function(data) {
       debug('Action: doRequest done')
       dispatch({
         type: types.DO_REQUEST,
         response: data
+      });
+      dispatch({
+        type: types.SET_SESSION_DATA,
+        sessionData: data.sessionAttributes
       });
     }).fail(function(error, response) {
       debug('Action: doRequest error')
